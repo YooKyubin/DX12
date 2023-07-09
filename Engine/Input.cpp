@@ -18,10 +18,14 @@ void Input::Update()
 		return;
 	}
 
+	BYTE asciiKeys[KEY_TYPE_COUNT] = {};
+	if (::GetKeyboardState(asciiKeys) == false)
+		return; // false 인 경우 문제가 발생한 경우임
+
 	for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
 	{
 		// 키가 눌려 있으면 true
-		if (::GetAsyncKeyState(key) & 0x8000) // 윈도우에서의 기본 사용법
+		if (asciiKeys[key] & 0x80) // high-order == 1
 		{
 			KEY_STATE& state = _states[key];
 
