@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Engine.h"
+#include "Material.h"
+#include "Transform.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -14,12 +16,14 @@ void Engine::Init(const WindowInfo& info)
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init();
-	_cb->Init(sizeof(Transform), 256); // hlsli의 cbufffer Test_B0 혹은 Test_B1의 크기에 맞춰준다.
 	_tableDescHeap->Init(256);
 	_depthStencilBuffer->Init(_window);
 
 	_input->Init(info.hwnd);
 	_timer->Init();
+
+	CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformMatrix), 256);
+	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
 
 	ResizeWindow(_window.width, _window.height);
 }
@@ -39,6 +43,11 @@ void Engine::Update()
 	_timer->Update();
 
 	ShowFps();
+}
+
+void Engine::LateUpdate()
+{
+	// TODO
 }
 
 void Engine::RenderBegin()
@@ -71,4 +80,14 @@ void Engine::ShowFps()
 	::wsprintf(text, L"FPS : %d", fps);
 
 	::SetWindowText(_window.hwnd, text);
+}
+
+void Engine::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 count)
+{
+	uint8 typeInt = static_cast<uint8>(reg);
+	assert(_constantBuffers.size() == typeInt); // 이코드 때문에 반드시 0번부터 순차적으로 만들어야 한다.
+
+	shared_ptr<ConstantBuffer> buffer = make_shared<ConstantBuffer>();
+	buffer->Init(reg, bufferSize, count);
+	_constantBuffers.push_back(buffer);
 }

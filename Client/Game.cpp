@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "Game.h"
 #include "Engine.h"
+#include "Material.h"
 
-shared_ptr<Mesh> mesh = make_shared<Mesh>();
-shared_ptr<Shader> shader = make_shared<Shader>();
-shared_ptr<Texture> texture = make_shared<Texture>();
+#include "GameObject.h"
+#include "MeshRenderer.h"
+
+shared_ptr<GameObject> gameObject = make_shared<GameObject>();
 
 void Game::Init(const WindowInfo& info)
 {
@@ -36,11 +38,33 @@ void Game::Init(const WindowInfo& info)
 		indexVec.push_back(3);
 	}
 
-	mesh->Init(vec, indexVec);
+	// 이번 테스트
+	gameObject->Init(); // Transform
 
-	shader->Init(L"..\\Resources\\Shader\\default.hlsli");
+	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 
-	texture->Init(L"..\\Resources\\Texture\\kirby.jpg");
+	{
+		shared_ptr<Mesh> mesh = make_shared<Mesh>();
+		mesh->Init(vec, indexVec);
+		meshRenderer->SetMesh(mesh);
+	}
+
+	{
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shared_ptr<Texture> texture = make_shared<Texture>();
+		shader->Init(L"..\\Resources\\Shader\\default.hlsli");
+		texture->Init(L"..\\Resources\\Texture\\kirby.jpg");
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetFloat(0, 0.2f);
+		material->SetFloat(1, 0.2f);
+		material->SetFloat(2, 0.2f);
+		material->SetTexture(0, texture);
+		meshRenderer->SetMaterial(material);
+	}
+
+	gameObject->AddComponent(meshRenderer);
 
 	GEngine->GetCmdQueue()->WaitSync(); // 혹시모를 동기화를 위해
 }
@@ -51,9 +75,7 @@ void Game::Update()
 
 	GEngine->RenderBegin();
 
-	shader->Update();
-
-	{
+	/*{
 		static Transform t = {};
 		
 		if (INPUT->GetButton(KEY_TYPE::W))
@@ -64,23 +86,9 @@ void Game::Update()
 			t.offset.x -= 1.f * DELTA_TIME;
 		if (INPUT->GetButton(KEY_TYPE::D))
 			t.offset.x += 1.f * DELTA_TIME;
+	}*/
 
-		mesh->SetTransform(t);
-
-		mesh->SetTexture(texture);
-
-		mesh->Render();
-	}
-
-	{
-		Transform t;
-		t.offset = Vec4(0.25f, 0.25f, 0.2f, 0.f);
-		mesh->SetTransform(t);
-
-		mesh->SetTexture(texture);
-
-		mesh->Render();
-	}
+	gameObject->Update(); // 나중엔 이녀석이 엔진으로 들어가야함
 
 	GEngine->RenderEnd();
 }
