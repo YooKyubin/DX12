@@ -6,6 +6,8 @@
 #include "Material.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
+#include "Transform.h"
+#include "Camera.h"
 
 void SceneManager::Update()
 {
@@ -14,6 +16,23 @@ void SceneManager::Update()
 
 	_activeScene->Update();
 	_activeScene->LateUpdate();
+	_activeScene->FinalUpdate();
+}
+
+// TEMP
+void SceneManager::Render()
+{
+	if (_activeScene == nullptr)
+		return;
+
+	const vector<shared_ptr<GameObject>>& gameObjects = _activeScene->GetGameObjects();
+	for (auto& gameObject : gameObjects)
+	{
+		if (gameObject->GetCamera() == nullptr)
+			continue;
+
+		gameObject->GetCamera()->Render();
+	}
 }
 
 void SceneManager::LoadScene(wstring sceneName)

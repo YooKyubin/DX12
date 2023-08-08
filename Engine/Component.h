@@ -4,6 +4,7 @@ enum class COMPONENT_TYPE : uint8
 {
 	TRANSFORM,
 	MESH_RENDERER,
+	CAMERA,
 	// ...
 	MONO_BEHAVIOUR, // 꼭 마지막에 올것
 	END,
@@ -28,6 +29,7 @@ public:
 	virtual void Start() { }
 	virtual void Update() { }
 	virtual void LateUpdate() { } // 모든 업데이트가 끝난 후의 시점에서 사용하기 위함
+	virtual void FinalUpdate() { } // 엔진에서 모든 작업 후 진짜 마지막 행렬 관련 작업을 하는 부분
 
 public:
 	COMPONENT_TYPE GetType() { return _type; }
