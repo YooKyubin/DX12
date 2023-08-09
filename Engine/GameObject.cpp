@@ -15,11 +15,6 @@ GameObject::~GameObject()
 
 }
 
-void GameObject::Init()
-{
-	AddComponent(make_shared<Transform>());
-}
-
 void GameObject::Awake()
 {
 	for (shared_ptr<Component>& component : _components)

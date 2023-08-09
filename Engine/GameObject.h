@@ -12,8 +12,6 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	void Init();
-
 	void Awake();
 	void Start();
 	void Update();
