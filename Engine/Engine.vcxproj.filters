@@ -19,6 +19,9 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{5e035447-d074-4383-8797-25eafcc52ff7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Test">
+      <UniqueIdentifier>{332ca3dd-b8a9-4540-900d-2029cbc200e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -99,6 +102,9 @@
     <ClInclude Include="Camera.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="TestCameraScript.h">
+      <Filter>GameObject\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -175,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCameraScript.cpp">
+      <Filter>GameObject\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
