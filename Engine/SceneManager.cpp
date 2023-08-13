@@ -86,7 +86,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		shared_ptr<GameObject> sphere = make_shared<GameObject>();
 		sphere->AddComponent(make_shared<Transform>());
 		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		sphere->GetTransform()->SetLocalPosition(Vec3(150.f, 100.f, 200.f));
+		sphere->GetTransform()->SetLocalPosition(Vec3(150.f, 100.f, 150.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
@@ -113,7 +113,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		light->AddComponent(make_shared<Transform>());
 		//light->GetTransform()->SetLocalPosition(Vec3(0.f, 150.f, 150.f));
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightDirection(Vec3(0.f, 1.f, 0.f));
+		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 		light->GetLight()->SetDiffuse(Vec3(0.1f, 1.f, 0.1f));
 		light->GetLight()->SetAmbient(Vec3(0.f, 0.1f, 0.f));
@@ -145,15 +145,15 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 //	{
 //		shared_ptr<GameObject> light = make_shared<GameObject>();
 //		light->AddComponent(make_shared<Transform>());
-//		light->GetTransform()->SetLocalPosition(Vec3(-150.f, 0.f, 150.f));
+//		light->GetTransform()->SetLocalPosition(Vec3(-150.f, 0.f, 0.f));
 //		light->AddComponent(make_shared<Light>());
-//		light->GetLight()->SetLightDirection(Vec3(1.f, 0.f, 0.f));
+//		light->GetLight()->SetLightDirection(Vec3(1.f, 1.f, 0.f));
 //		light->GetLight()->SetLightType(LIGHT_TYPE::SPOT_LIGHT);
 //		light->GetLight()->SetDiffuse(Vec3(0.f, 0.1f, 1.f));
-//		//light->GetLight()->SetAmbient(Vec3(0.f, 0.f, 0.1f));
+//		light->GetLight()->SetAmbient(Vec3(0.f, 0.f, 0.5f));
 //		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 //		light->GetLight()->SetLightRange(10000.f);
-//		light->GetLight()->SetLightAngle(XM_PI / 10);
+//		light->GetLight()->SetLightAngle(XM_PI / 4);
 //		scene->AddGameObject(light);
 //	}
 //#pragma endregion
