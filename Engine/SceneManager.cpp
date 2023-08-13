@@ -113,7 +113,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		light->AddComponent(make_shared<Transform>());
 		//light->GetTransform()->SetLocalPosition(Vec3(0.f, 150.f, 150.f));
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
+		light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 1.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 		light->GetLight()->SetDiffuse(Vec3(0.1f, 1.f, 0.1f));
 		light->GetLight()->SetAmbient(Vec3(0.f, 0.1f, 0.f));

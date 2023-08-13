@@ -49,7 +49,7 @@ float4 PS_Main(VS_OUT input) : SV_Target
 
     color.xyz = (totalColor.diffuse.xyz * color.xyz)
         + totalColor.ambient.xyz * color.xyz
-        + totalColor.specular.xyz;
+        + totalColor.specular.xyz * float3(200.f, 0.f, 0.f);
 
     return color;
 }
