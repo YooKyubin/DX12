@@ -7,14 +7,14 @@ void TableDescriptorHeap::Init(uint32 count)
 	_groupCount = count;
 
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.NumDescriptors = count * REGISTER_COUNT;
+	desc.NumDescriptors = count * (REGISTER_COUNT-1); // b0는 전역, rootCBV로 갔음
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // 차이점: GPU 메모리에서 상주하도록
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
 	DEVICE->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_descHeap));
 
 	_handleSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	_groupSize = _handleSize * REGISTER_COUNT;
+	_groupSize = _handleSize * (REGISTER_COUNT - 1); // b0는 전역
 }
 
 void TableDescriptorHeap::Clear()
@@ -63,8 +63,9 @@ D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(SRV_REGISTER reg)
 
 D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(uint8 reg)
 {
+	assert(reg > 0); // reg가 b0라면 안되니까 문제를 걸러주기 위함
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
 	handle.ptr += _currentGroupIndex * _groupSize;
-	handle.ptr += reg * _handleSize;
+	handle.ptr += (reg - 1) * _handleSize;
 	return handle;
 }
