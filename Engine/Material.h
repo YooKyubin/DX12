@@ -17,9 +17,9 @@ struct MaterialParams
 	void SetFloat(uint8 index, float value) { floatParams[index] = value; }
 	void SetTexOn(uint8 index, int32 value) { texOnParams[index] = value; }
 
-	array<int32, MATERIAL_INT_COUNT> intParams;
-	array<float, MATERIAL_FLOAT_COUNT> floatParams;
-	array<int32, MATERIAL_TEXTURE_COUNT> texOnParams;
+	array<int32, MATERIAL_INT_COUNT> intParams {};
+	array<float, MATERIAL_FLOAT_COUNT> floatParams {};
+	array<int32, MATERIAL_TEXTURE_COUNT> texOnParams {};
 };
 
 class Material : public Object
