@@ -31,14 +31,14 @@ void Camera::FinalUpdate() // 실질적 행렬 계산 항목
 	else
 		_matProjection = ::XMMatrixOrthographicLH(width * _scale, height * _scale, _near, _far);
 
-	S_MatView = _matView;
-	S_MatProjection = _matProjection;
-
 	_frustum.FinalUpdate();
 }
 
 void Camera::Render()
 {
+	S_MatView = _matView;
+	S_MatProjection = _matProjection;
+
 	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
 
 	// TODO : Layer 구분
@@ -47,6 +47,9 @@ void Camera::Render()
 	for (auto& gameObject : gameObjects)
 	{
 		if (gameObject->GetMeshRenderer() == nullptr)
+			continue;
+
+		if (IsCulled(gameObject->GetLayerIndex()))
 			continue;
 
 		if (gameObject->GetCheckFrustum())
