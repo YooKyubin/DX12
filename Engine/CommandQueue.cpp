@@ -67,8 +67,10 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
 
+	int8 backIndex = _swapChain->GetBackBufferIndex();
+
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		_swapChain->GetBackRTVBuffer().Get(),
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
 		D3D12_RESOURCE_STATE_PRESENT, // 화면 출력
 		D3D12_RESOURCE_STATE_RENDER_TARGET); // 외주 결과물
 
@@ -87,22 +89,14 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
 	_cmdList->RSSetViewports(1, vp);
 	_cmdList->RSSetScissorRects(1, rect);
-
-	// Specify the buffers we are going to render to.
-	// gpu에게 작업할 백버퍼 알려줌
-	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();
-	_cmdList->ClearRenderTargetView(backBufferView, Colors::Black, 0, nullptr);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilBufferView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();
-	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, &depthStencilBufferView);
-	_cmdList->ClearDepthStencilView(depthStencilBufferView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	// ..(depthStencilBufferView, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, ...) 스텐실버퍼도 초기화하려면 저렇게 비트 연산자 사용해서 같이 쓰셈
 }
 
 void CommandQueue::RenderEnd()
 {
+	int8 backIndex = _swapChain->GetBackBufferIndex();
+
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		_swapChain->GetBackRTVBuffer().Get(),
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, // 외주 결과물
 		D3D12_RESOURCE_STATE_PRESENT); // 화면 출력
 
