@@ -15,7 +15,7 @@ class Engine
 {
 public:
 
-	void Init(const WindowInfo& window);
+	void Init(const WindowInfo& info);
 	void Update();
 
 public:

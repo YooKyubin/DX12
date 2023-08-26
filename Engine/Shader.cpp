@@ -52,7 +52,11 @@ void Shader::Init(const wstring& path, ShaderInfo info, const string& vs, const 
 		_pipelineDesc.NumRenderTargets = 1;
 		_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		break;
-
+	case SHADER_TYPE::LIGHTING:
+		_pipelineDesc.NumRenderTargets = 2;
+		_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		_pipelineDesc.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		break;
 	}
 
 	switch (info.rasterizerType)
