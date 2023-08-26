@@ -18,6 +18,6 @@ void MeshRenderer::Render()
 {
 	GetTransform()->PushData();
 
-	_material->PushDate();
+	_material->PushData();
 	_mesh->Render();
 }
