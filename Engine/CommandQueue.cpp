@@ -3,12 +3,16 @@
 #include "SwapChain.h"
 #include "Engine.h"
 
-CommandQueue::~CommandQueue()
+// ************************
+// GraphicsCommandQueue
+// ************************
+
+GrphicsCommandQueue::~GrphicsCommandQueue()
 {
 	::CloseHandle(_fenceEvent);
 }
 
-void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
+void GrphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
 {
 	// shared ptr이라 ref count가 1 증가하면서 포인터를 가질 수 있음
 	_swapChain = swapChain;
@@ -17,7 +21,7 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapC
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-	device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_cmdQueue));
+	device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_graphicsCmdQueue));
 
 	// - D3D12_COMMAND_LIST_TYPE_DIRECT : GPU가 직접 실행하는 명령 목록
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_cmdAlloc));
@@ -41,7 +45,7 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapC
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void CommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드는아니지만 첫 시험 코드이니까
+void GrphicsCommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드는아니지만 첫 시험 코드이니까
 {
 	// Advance the fence value to mark commands up to this fence point.
 	_fenceValue++;
@@ -49,7 +53,7 @@ void CommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드�
 	// Add an instruction to the command queue to set a new fence point.  Because we 
 	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
 	// processing all the commands prior to this Signal().
-	_cmdQueue->Signal(_fence.Get(), _fenceValue);
+	_graphicsCmdQueue->Signal(_fence.Get(), _fenceValue);
 
 	// Wait until the GPU has completed commands up to this fence point.
 	if (_fence->GetCompletedValue() < _fenceValue)
@@ -62,7 +66,7 @@ void CommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드�
 	}
 }
 
-void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
+void GrphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 {
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
@@ -74,14 +78,14 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 		D3D12_RESOURCE_STATE_PRESENT, // 화면 출력
 		D3D12_RESOURCE_STATE_RENDER_TARGET); // 외주 결과물
 
-	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	_cmdList->SetGraphicsRootSignature(GRAPHICS_ROOT_SIGNATURE.Get());
 
 	GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::TRANSFORM)->Clear();
 	GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::MATERIAL)->Clear();
 
-	GEngine->GetTableDescHeap()->Clear();
+	GEngine->GetGraphicsDescHeap()->Clear();
 
-	ID3D12DescriptorHeap* descHeap = GEngine->GetTableDescHeap()->GetDescriptorHeap().Get();
+	ID3D12DescriptorHeap* descHeap = GEngine->GetGraphicsDescHeap()->GetDescriptorHeap().Get();
 	_cmdList->SetDescriptorHeaps(1, &descHeap);
 
 	_cmdList->ResourceBarrier(1, &barrier);
@@ -91,7 +95,7 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdList->RSSetScissorRects(1, rect);
 }
 
-void CommandQueue::RenderEnd()
+void GrphicsCommandQueue::RenderEnd()
 {
 	int8 backIndex = _swapChain->GetBackBufferIndex();
 
@@ -105,7 +109,7 @@ void CommandQueue::RenderEnd()
 
 	// 커맨드 리스트 수행
 	ID3D12CommandList* cmdListArr[] = { _cmdList.Get() };
-	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+	_graphicsCmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
 
 	_swapChain->Present();
 
@@ -117,16 +121,76 @@ void CommandQueue::RenderEnd()
 	_swapChain->SwapIndex();
 }
 
-void CommandQueue::FlushResourceCommandQueue()
+void GrphicsCommandQueue::FlushResourceCommandQueue()
 {
 	_resCmdList->Close();
 
 	ID3D12CommandList* cmdListArr[] = { _resCmdList.Get() };
-	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+	_graphicsCmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
 
 	WaitSync();
 
 	// reset하여 다시 사용할 준비
 	_resCmdAlloc->Reset();
 	_resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
+}
+
+// ************************
+// ComputeCommandQueue
+// ************************
+
+// ************************
+// ComputeCommandQueue
+// ************************
+
+ComputeCommandQueue::~ComputeCommandQueue()
+{
+	::CloseHandle(_fenceEvent);
+}
+
+void ComputeCommandQueue::Init(ComPtr<ID3D12Device> device)
+{
+	D3D12_COMMAND_QUEUE_DESC computeQueueDesc = {};
+	computeQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+	computeQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+	device->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&_cmdQueue));
+
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&_cmdAlloc));
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, _cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_cmdList));
+
+	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
+
+	// CreateFence
+	// - CPU와 GPU의 동기화 수단으로 쓰인다
+	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
+	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+void ComputeCommandQueue::WaitSync()
+{
+	_fenceValue++;
+
+	_cmdQueue->Signal(_fence.Get(), _fenceValue);
+
+	if (_fence->GetCompletedValue() < _fenceValue)
+	{
+		_fence->SetEventOnCompletion(_fenceValue, _fenceEvent);
+		::WaitForSingleObject(_fenceEvent, INFINITE);
+	}
+}
+
+void ComputeCommandQueue::FlushComputeCommandQueue()
+{
+	_cmdList->Close();
+
+	ID3D12CommandList* cmdListArr[] = { _cmdList.Get() };
+	auto t = _countof(cmdListArr);
+	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+	WaitSync();
+
+	_cmdAlloc->Reset();
+	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
+
+	COMPUTE_CMD_LIST->SetComputeRootSignature(COMPUTE_ROOT_SIGNATURE.Get());
 }
