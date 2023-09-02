@@ -213,6 +213,43 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	}
 #pragma endregion
 
+#pragma region Object Light
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{	// Deferred (Deferred)
+
+			ShaderInfo info =
+			{
+				SHADER_TYPE::DEFERRED,
+				RASTERIZER_TYPE::CULL_NONE,
+				DEPTH_STENCIL_TYPE::LESS,
+				BLEND_TYPE::DEFAULT,
+				
+			};
+
+			shared_ptr<Shader> shader = make_shared<Shader>();
+			shader->Init(L"..\\Resources\\Shader\\deferred.fx", info);
+
+			//shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"kirby", L"..\\Resources\\Texture\\kirby.jpg");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		scene->AddGameObject(obj);
+	}
+#pragma endregion
+
 #pragma region Spot Light
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();

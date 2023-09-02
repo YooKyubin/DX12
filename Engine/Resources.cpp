@@ -321,8 +321,9 @@ void Resources::CreateDefaultShader()
 		ShaderInfo info =
 		{
 			SHADER_TYPE::LIGHTING,
-			RASTERIZER_TYPE::CULL_NONE, // point light volume mesh에 카메라가 들어가게 되면 문젝 발생할 수 있어 cull none으로 설정
+			RASTERIZER_TYPE::CULL_FRONT, // point light volume mesh에 카메라가 들어가게 되면 문젝 발생할 수 있어 cull none으로 설정
 			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			//DEPTH_STENCIL_TYPE::GREATER,
 			BLEND_TYPE::ONE_TO_ONE_BLEND
 		};
 
