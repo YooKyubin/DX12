@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Material.h"
 #include "Shader.h"
+#include "ParticleSystem.h"
 // static 변수 사용을 위한 구현부에서 선언
 Matrix Camera::S_MatView;
 Matrix Camera::S_MatProjection;
@@ -43,10 +44,11 @@ void Camera::SortGameObject()
 
 	_vecForward.clear(); // 이전 프레임에서 사용하던 것들은 날려주기
 	_vecDeferred.clear();
+	_vecParticle.clear();
 
 	for (auto& gameObject : gameObjects)
 	{
-		if (gameObject->GetMeshRenderer() == nullptr)
+		if (gameObject->GetMeshRenderer() == nullptr && gameObject->GetParticleSystem() == nullptr)
 			continue;
 
 		if (IsCulled(gameObject->GetLayerIndex()))
@@ -62,15 +64,22 @@ void Camera::SortGameObject()
 			}
 		}
 
-		SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
-		switch (shaderType)
+		if (gameObject->GetMeshRenderer()) // meshRenderer가 있는 게임 오브젝트
 		{
-		case SHADER_TYPE::DEFERRED:
-			_vecDeferred.push_back(gameObject);
-			break;
-		case SHADER_TYPE::FORWARD:
-			_vecForward.push_back(gameObject);
-			break;
+			SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
+			switch (shaderType)
+			{
+			case SHADER_TYPE::DEFERRED:
+				_vecDeferred.push_back(gameObject);
+				break;
+			case SHADER_TYPE::FORWARD:
+				_vecForward.push_back(gameObject);
+				break;
+			}
+		}
+		else // 일반 파티클
+		{
+			_vecParticle.push_back(gameObject);
 		}
 	}
 }
@@ -94,5 +103,10 @@ void Camera::Render_Forward()
 	for (auto& gameObject : _vecForward)
 	{
 		gameObject->GetMeshRenderer()->Render();
+	}
+
+	for (auto& gameObject : _vecParticle)
+	{
+		gameObject->GetParticleSystem()->Render();
 	}
 }
