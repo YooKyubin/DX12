@@ -21,7 +21,7 @@ public:
 public:
 	const WindowInfo& GetWindow() { return _window; }
 	shared_ptr<Device> GetDevice() { return _device; }
-	shared_ptr<GrphicsCommandQueue> GetGraphicsCmdQueue() { return _graphicsCmdQueue; }
+	shared_ptr<GraphicsCommandQueue> GetGraphicsCmdQueue() { return _graphicsCmdQueue; }
 	shared_ptr<ComputeCommandQueue> GetComputeCmdQueue() { return _computeCmdQueue; }
 	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
 	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
@@ -50,7 +50,7 @@ private:
 	D3D12_RECT		_scissorRect = {};
 
 	shared_ptr<Device> _device = make_shared<Device>();
-	shared_ptr<GrphicsCommandQueue> _graphicsCmdQueue = make_shared<GrphicsCommandQueue>();
+	shared_ptr<GraphicsCommandQueue> _graphicsCmdQueue = make_shared<GraphicsCommandQueue>();
 	shared_ptr<ComputeCommandQueue> _computeCmdQueue = make_shared<ComputeCommandQueue>();
 	shared_ptr<SwapChain> _swapChain = make_shared<SwapChain>();
 	shared_ptr<RootSignature> _rootSignature = make_shared<RootSignature>();

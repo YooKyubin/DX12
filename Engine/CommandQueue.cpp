@@ -7,12 +7,12 @@
 // GraphicsCommandQueue
 // ************************
 
-GrphicsCommandQueue::~GrphicsCommandQueue()
+GraphicsCommandQueue::~GraphicsCommandQueue()
 {
 	::CloseHandle(_fenceEvent);
 }
 
-void GrphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
+void GraphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
 {
 	// shared ptr이라 ref count가 1 증가하면서 포인터를 가질 수 있음
 	_swapChain = swapChain;
@@ -45,7 +45,7 @@ void GrphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void GrphicsCommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드는아니지만 첫 시험 코드이니까
+void GraphicsCommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋은 코드는아니지만 첫 시험 코드이니까
 {
 	// Advance the fence value to mark commands up to this fence point.
 	_fenceValue++;
@@ -66,7 +66,7 @@ void GrphicsCommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋�
 	}
 }
 
-void GrphicsCommandQueue::RenderBegin()
+void GraphicsCommandQueue::RenderBegin()
 {
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
@@ -91,7 +91,7 @@ void GrphicsCommandQueue::RenderBegin()
 	_cmdList->ResourceBarrier(1, &barrier);
 }
 
-void GrphicsCommandQueue::RenderEnd()
+void GraphicsCommandQueue::RenderEnd()
 {
 	int8 backIndex = _swapChain->GetBackBufferIndex();
 
@@ -117,7 +117,7 @@ void GrphicsCommandQueue::RenderEnd()
 	_swapChain->SwapIndex();
 }
 
-void GrphicsCommandQueue::FlushResourceCommandQueue()
+void GraphicsCommandQueue::FlushResourceCommandQueue()
 {
 	_resCmdList->Close();
 

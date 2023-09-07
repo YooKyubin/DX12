@@ -7,10 +7,10 @@ class DescriptorHeap;
 // GraphicsCommandQueue
 // ************************
 
-class GrphicsCommandQueue
+class GraphicsCommandQueue
 {
 public:
-	~GrphicsCommandQueue();
+	~GraphicsCommandQueue();
 
 	void Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain);
 	void WaitSync();
