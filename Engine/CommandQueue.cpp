@@ -66,7 +66,7 @@ void GrphicsCommandQueue::WaitSync() // cpu를 놀게 만드는 코드임, 효율적이고 좋�
 	}
 }
 
-void GrphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
+void GrphicsCommandQueue::RenderBegin()
 {
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
@@ -89,10 +89,6 @@ void GrphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT
 	_cmdList->SetDescriptorHeaps(1, &descHeap);
 
 	_cmdList->ResourceBarrier(1, &barrier);
-
-	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
-	_cmdList->RSSetViewports(1, vp);
-	_cmdList->RSSetScissorRects(1, rect);
 }
 
 void GrphicsCommandQueue::RenderEnd()
