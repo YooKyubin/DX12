@@ -24,8 +24,8 @@ void FBXLoader::LoadFbx(const wstring& path)
 	Import(path);
 
 	// Animation	
-	//LoadBones(_scene->GetRootNode());
-	//LoadAnimationInfo();
+	LoadBones(_scene->GetRootNode());
+	LoadAnimationInfo();
 
 	// 로드된 데이터 파싱 (Mesh/Material/Skin)
 	ParseNode(_scene->GetRootNode());
@@ -377,7 +377,7 @@ void FBXLoader::LoadBones(FbxNode* node, int32 idx, int32 parentIdx)
 		LoadBones(node->GetChild(i), static_cast<int32>(_bones.size()), idx);
 }
 
-void FBXLoader::LoadAnimationInfo()
+void FBXLoader::LoadAnimationInfo() // 애니메이션에 대한 간단한 정보들
 {
 	_scene->FillAnimStackNameArray(OUT _animNames);
 
@@ -401,7 +401,7 @@ void FBXLoader::LoadAnimationInfo()
 	}
 }
 
-void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
+void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo) // 실제 애니메이션 데이터 로드
 {
 	const int32 skinCount = mesh->GetDeformerCount(FbxDeformer::eSkin);
 	if (skinCount <= 0 || _animClips.empty())
@@ -529,7 +529,7 @@ void FBXLoader::LoadKeyframe(int32 animIndex, FbxNode* node, FbxCluster* cluster
 	FbxLongLong startFrame = _animClips[animIndex]->startTime.GetFrameCount(timeMode);
 	FbxLongLong endFrame = _animClips[animIndex]->endTime.GetFrameCount(timeMode);
 
-	for (FbxLongLong frame = startFrame; frame < endFrame; frame++)
+	for (FbxLongLong frame = startFrame; frame < endFrame; frame++) // 각 프레임마다의 키프레임을 긁어옴
 	{
 		FbxKeyFrameInfo keyFrameInfo = {};
 		FbxTime fbxTime = 0;

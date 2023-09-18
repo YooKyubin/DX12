@@ -10,6 +10,7 @@ enum class COMPONENT_TYPE : uint8
 	PARTICLE_SYSTEM,
 	TERRAIN,
 	COLLIDER,
+	ANIMATOR,
 	// ...
 	MONO_BEHAVIOUR, // 꼭 마지막에 올것
 	END,
@@ -22,6 +23,8 @@ enum
 
 class GameObject;
 class Transform;
+class MeshRenderer;
+class Animator;
 
 class Component : public Object
 {
@@ -42,6 +45,8 @@ public:
 
 	shared_ptr<GameObject> GetGameObject();
 	shared_ptr<Transform> GetTransform();
+	shared_ptr<MeshRenderer> GetMeshRenderer();
+	shared_ptr<Animator> GetAnimator();
 
 private:
 	friend class GameObject; // GameObject에게만 private 접근 권한을 부여 -> 자신을 해당 컴포넌트의 주인으로 설정

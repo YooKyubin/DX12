@@ -139,8 +139,8 @@ struct Vertex
 	Vec2 uv;
 	Vec3 normal;
 	Vec3 tangent;
-	Vec4 weights;
-	Vec4 indices;
+	Vec4 weights; // 가중치는 wieghts 이다.
+	Vec4 indices; // indices번째 본(bone)의 
 };
 
 #define DECLARE_SINGLE(type)		\
@@ -177,6 +177,13 @@ struct TransformParams
 	Matrix matWV;
 	Matrix matWVP;
 	Matrix matViewInv;
+};
+
+struct AnimFrameParams
+{
+	Vec4	scale;
+	Vec4	rotation; // Quaternion
+	Vec4	translation;
 };
 
 extern unique_ptr<class Engine> GEngine;
