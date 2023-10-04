@@ -6,6 +6,16 @@ void Input::Init(HWND hwnd)
 {
 	_hwnd = hwnd;
 	_states.resize(KEY_TYPE_COUNT, KEY_STATE::NONE);
+
+	POINT temp;
+	temp.x = GEngine->GetWindow().width / 2;
+	temp.y = GEngine->GetWindow().height / 2;
+
+	::ClientToScreen(_hwnd, &temp);
+	::SetCursorPos(temp.x, temp.y);
+
+	::GetCursorPos(&_mousePos);
+	::ScreenToClient(_hwnd, &_mousePos);
 }
 
 void Input::Update()

@@ -156,6 +156,12 @@
     <ClInclude Include="TestDragon.h">
       <Filter>Object\Test</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Object\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature.h">
+      <Filter>Object\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -279,6 +285,12 @@
       <Filter>Object\Component</Filter>
     </ClCompile>
     <ClCompile Include="TestDragon.cpp">
+      <Filter>Object\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Object\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature.cpp">
       <Filter>Object\Test</Filter>
     </ClCompile>
   </ItemGroup>

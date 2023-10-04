@@ -18,6 +18,8 @@
 #include "MeshData.h"
 #include "TestDragon.h"
 
+#include "Player.h"
+
 void SceneManager::Update()
 {
 	if (_activeScene == nullptr)
@@ -144,18 +146,77 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 
 	shared_ptr<Scene> scene = make_shared<Scene>();
 
-#pragma region Camera
+#pragma region Camera and Player
 	{
+		// player
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetName(L"Player");
+		obj->AddComponent(make_shared<Transform>());
+		obj->AddComponent(make_shared<SphereCollider>());
+		obj->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0, 10.f, 250.f));
+		obj->SetStatic(false);
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+			shared_ptr<Texture> tex = GET_SINGLE(Resources)->Load<Texture>(L"white", L"..\\Resources\\Texture\\white.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, tex);
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+		obj->AddComponent(meshRenderer);
+		obj->AddComponent(make_shared<Player>());
+
+		scene->AddGameObject(obj);
+
+
+		// camera
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=1000, FOV=45
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->GetCamera()->SetFar(10000.f);
-		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+		camera->GetTransform()->SetParent(obj->GetTransform());
+		camera->GetTransform()->SetLocalRotation(Vec3(10.0f * XM_PI / 180.0f, 0.0f, 0.0f));
+		camera->GetTransform()->SetLocalPosition(Vec3(0.0f, 3.0f, -5.0f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
 		scene->AddGameObject(camera);
+	}
+#pragma endregion
+
+#pragma region ground
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetName(L"Ground");
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(500.f, 2.f, 500.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0, -10.f, 250.f));
+		obj->SetStatic(true);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadCubeMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+			shared_ptr<Texture> tex = GET_SINGLE(Resources)->Load<Texture>(L"skyblue", L"..\\Resources\\Texture\\skyblue.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, tex);
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		obj->AddComponent(meshRenderer);
+		scene->AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -278,9 +339,9 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 1000, -1000));
+		light->GetTransform()->SetLocalPosition(Vec3(-200, 500, -230));
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightDirection(Vec3(0, -1, 1.f));
+		light->GetLight()->SetLightDirection(Vec3(0.4, -1, 0.8f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
 		light->GetLight()->SetAmbient(Vec3(0.1f, 0.1f, 0.1f));
@@ -290,43 +351,39 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	}
 #pragma endregion
 
-#pragma region Tessellation Test
-	//{
-	//	shared_ptr<GameObject> gameObject = make_shared<GameObject>();
-	//	gameObject->AddComponent(make_shared<Transform>());
-	//	gameObject->GetTransform()->SetLocalPosition(Vec3(0, 0, 300));
-	//	gameObject->GetTransform()->SetLocalScale(Vec3(100, 100, 100));
-	//	gameObject->GetTransform()->SetLocalRotation(Vec3(0, 0, 0));
+//#pragma region FBX
+//	{
+//		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
+//
+//		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+//
+//		for (auto& gameObject : gameObjects)
+//		{
+//			gameObject->SetName(L"Dragon");
+//			gameObject->SetCheckFrustum(false);
+//			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
+//			gameObject->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+//			scene->AddGameObject(gameObject);
+//			gameObject->AddComponent(make_shared<TestDragon>());
+//		}
+//	}
+//#pragma endregion
 
-	//	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-	//	{
-	//		shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-	//		meshRenderer->SetMesh(mesh);
-	//		meshRenderer->SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"Tessellation"));
-	//	}
-	//	gameObject->AddComponent(meshRenderer);
-
-	//	scene->AddGameObject(gameObject);
-	//}
-#pragma endregion
-
-#pragma region FBX
-	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
-
-		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-		for (auto& gameObject : gameObjects)
-		{
-			gameObject->SetName(L"Dragon");
-			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
-			scene->AddGameObject(gameObject);
-			gameObject->AddComponent(make_shared<TestDragon>());
-		}
-	}
-#pragma endregion
-
+//#pragma region Y bot
+//	{
+//		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\doctor.fbx");
+//
+//		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+//
+//		for (auto& gameObject : gameObjects)
+//		{
+//			gameObject->SetName(L"doctor");
+//			gameObject->SetCheckFrustum(false);
+//			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
+//			gameObject->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+//			scene->AddGameObject(gameObject);
+//		}
+//	}
+//#pragma endregion
 	return scene;
 }
