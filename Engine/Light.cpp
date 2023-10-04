@@ -87,6 +87,8 @@ void Light::SetLightType(LIGHT_TYPE type)
 		_shadowCamera->GetCamera()->SetFar(10000.f);
 		_shadowCamera->GetCamera()->SetWidth(4096);
 		_shadowCamera->GetCamera()->SetHeight(4096);
+		_shadowCamera->GetCamera()->SetScale(0.2f); // 하드코딩이긴한데 원인을 알면 좋을 것 같음
+		_shadowCamera->GetCamera()->SetProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC);
 
 		break;
 	case LIGHT_TYPE::POINT_LIGHT:
