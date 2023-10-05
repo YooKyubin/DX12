@@ -18,6 +18,7 @@
 #include "MeshData.h"
 #include "TestDragon.h"
 
+#include "Creature.h"
 #include "Player.h"
 
 void SceneManager::Update()
@@ -162,12 +163,14 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 			meshRenderer->SetMesh(sphereMesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-			shared_ptr<Texture> tex = GET_SINGLE(Resources)->Load<Texture>(L"white", L"..\\Resources\\Texture\\white.png");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, tex);
-			meshRenderer->SetMaterial(material->Clone());
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"White");
+			//shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+			//shared_ptr<Texture> tex = GET_SINGLE(Resources)->Load<Texture>(L"white", L"..\\Resources\\Texture\\white.png");
+			//shared_ptr<Material> material = make_shared<Material>();
+			//material->SetShader(shader);
+			//material->SetTexture(0, tex);
+			material->SetInt(0, 1);
+			meshRenderer->SetMaterial(material);
 		}
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
@@ -190,6 +193,35 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
 		scene->AddGameObject(camera);
+	}
+#pragma endregion
+
+#pragma region dummies
+	{
+		for (int32 i = 0; i < 30; i++)
+		{
+			shared_ptr<GameObject> obj = make_shared<GameObject>();
+			obj->AddComponent(make_shared<Transform>());
+			obj->GetTransform()->SetLocalScale(Vec3(25.f, 25.f, 25.f));
+			//obj->GetTransform()->SetLocalPosition(Vec3(-300.f + i * 10.f, 0.f, 500.f));
+			obj->GetTransform()->SetLocalPosition(Vec3(-250.f + i % 5 * 100.f, 0.f, (float)i / 6 * 80.f));
+			obj->SetStatic(false);
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"White");
+				material->SetInt(0, 1);
+				meshRenderer->SetMaterial(material);
+				//material->SetInt(0, 0);
+				//meshRenderer->SetMaterial(material->Clone());
+			}
+			obj->AddComponent(meshRenderer);
+			scene->AddGameObject(obj);
+		}
+
 	}
 #pragma endregion
 
@@ -339,7 +371,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(-200, 500, -230));
+		light->GetTransform()->SetLocalPosition(Vec3(-20, 50, -13));
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightDirection(Vec3(0.4, -1, 0.8f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
