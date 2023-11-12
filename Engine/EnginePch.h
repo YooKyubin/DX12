@@ -2,6 +2,17 @@
 
 // std::byte 사용하지 않음
 #define _HAS_STD_BYTE 0
+#define WIN32_LEAN_AND_MEAN // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
+
+#include "CorePch.h"
+
+#ifdef _DEBUG
+#pragma comment(lib, "ServerCore\\Debug\\ServerCore.lib")
+#pragma comment(lib, "Protobuf\\Debug\\libprotobufd.lib")
+#else
+#pragma comment(lib, "ServerCore\\Release\\ServerCore.lib")
+#pragma comment(lib, "Protobuf\\Release\\libprotobuf.lib")
+#endif
 
 // 각종 include
 #include <windows.h>
@@ -70,6 +81,17 @@ using Vec2		= DirectX::SimpleMath::Vector2;
 using Vec3		= DirectX::SimpleMath::Vector3;
 using Vec4		= DirectX::SimpleMath::Vector4;
 using Matrix	= DirectX::SimpleMath::Matrix;
+
+// shared_ptr
+using IocpCoreRef = std::shared_ptr<class IocpCore>;
+using IocpObjectRef = std::shared_ptr<class IocpObject>;
+using SessionRef = std::shared_ptr<class Session>;
+using PacketSessionRef = std::shared_ptr<class PacketSession>;
+using ListenerRef = std::shared_ptr<class Listener>;
+using ServerServiceRef = std::shared_ptr<class ServerService>;
+using ClientServiceRef = std::shared_ptr<class ClientService>;
+using SendBufferRef = std::shared_ptr<class SendBuffer>;
+using SendBufferChunkRef = std::shared_ptr<class SendBufferChunk>;
 
 enum class CBV_REGISTER : uint8
 {
@@ -143,16 +165,16 @@ struct Vertex
 	Vec4 indices; // indices번째 본(bone)의 
 };
 
-#define DECLARE_SINGLE(type)		\
-private:							\
-	type() {}						\
-	~type() {}						\
-public:								\
-	static type* GetInstance()		\
-	{								\
-		static type instance;		\
-		return &instance;			\
-	}								\
+#define DECLARE_SINGLE(type)				\
+private:									\
+	type() {}								\
+	~type() {}								\
+public:										\
+	static type* GetInstance()				\
+	{										\
+		static type instance;				\
+		return &instance;					\
+	}										\
 
 #define GET_SINGLE(type)	type::GetInstance()
 

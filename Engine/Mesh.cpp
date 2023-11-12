@@ -226,6 +226,12 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 				const int32 keyFrameCount = static_cast<int32>(animClip.keyFrames[b].size());
 				for (int32 f = 0; f < keyFrameCount; f++)
 				{
+					if (f == 200)
+						int a = 30;
+					if (f == 300)
+						int a = 20;
+					if (f == 400)
+						int a = 10;
 					int32 idx = static_cast<int32>(boneCount * f + b);
 
 					frameParams[idx] = AnimFrameParams

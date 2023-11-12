@@ -170,6 +170,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+    case WM_MOUSEMOVE:
+        {
+            //OutputDebugString(L"Client.cpp : mouse move \n");
+            break;
+        }
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

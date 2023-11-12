@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 
 #include "Engine.h"
+#include "CreatureManager.h"
 
 TestCameraScript::TestCameraScript()
 {
@@ -22,20 +23,26 @@ void TestCameraScript::Start()
 	_preCursorPos = INPUT->GetMousePos();
 	_cursorPos = _preCursorPos;
 
-	Vec3 rotation = GetTransform()->GetLocalRotation() * XM_PI;
-	char buffer[100];
-	sprintf_s(buffer, "start Position : cur : ( %d, %d), pre : ( %d, %d )\n",
-		(int)_cursorPos.x, (int)_cursorPos.y,
-		(int)_preCursorPos.x, (int)_preCursorPos.y);
-	OutputDebugStringA(buffer);
+	// 단순 출력
+	//Vec3 rotation = GetTransform()->GetLocalRotation() * XM_PI;
+	//char buffer[100];
+	//sprintf_s(buffer, "start Position : cur : ( %d, %d), pre : ( %d, %d )\n",
+	//	(int)_cursorPos.x, (int)_cursorPos.y,
+	//	(int)_preCursorPos.x, (int)_preCursorPos.y);
+	//OutputDebugStringA(buffer);
 
 }
 
 void TestCameraScript::LateUpdate()
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
+	//int32 playerID = GET_SINGLE(CreatureManager)->GetPlayerID();
 
+	//Vec3 playerPos = GET_SINGLE(CreatureManager)->GetCreatures(playerID)->location.position;
+	//Vec3 playerRot = GET_SINGLE(CreatureManager)->GetCreatures(playerID)->location.rotation;
 
+	//Vec3 pos = playerPos + Vec3(0.0f, 13.0f, -15.0f);
+	//Vec3 rotation = playerRot + Vec3(10.0f * XM_PI / 180.0f, 0.0f, 0.0f);
 
 	_cursorPos = INPUT->GetMousePos();
 	if (INPUT->GetButton(KEY_TYPE::RBUTTON))

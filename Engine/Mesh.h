@@ -72,7 +72,7 @@ private:
 	vector<IndexBufferInfo>		_vecIndexInfo;
 
 	// Animation
-	vector<AnimClipInfo>			_animClips;
+	vector<AnimClipInfo>			_animClips {};
 	vector<BoneInfo>				_bones;
 
 		// 키프레임 매트릭스를 GPU에서 관리하도록 하기 위함

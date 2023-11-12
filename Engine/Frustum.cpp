@@ -1,12 +1,33 @@
 #include "pch.h"
 #include "Frustum.h"
 #include "Camera.h"
+#include "Input.h"
+
+static int debugCnt = 0;
 
 void Frustum::FinalUpdate()
 {
 	Matrix matViewInv = Camera::S_MatView.Invert();
 	Matrix matProjectionInv = Camera::S_MatProjection.Invert();
 	Matrix matInv = matProjectionInv * matViewInv;
+
+	if (INPUT->GetButtonDown(KEY_TYPE::Q))
+	{
+		++debugCnt;
+		Vec3 up = Camera::S_MatView.Up();
+		Vec3 forward = Camera::S_MatView.Backward();
+		Vec3 right = Camera::S_MatView.Right();
+
+		string strUp = to_string(up.x) + '\t' + to_string(up.y) + '\t' + to_string(up.z);
+		string strForward = to_string(forward.x) + '\t' + to_string(forward.y) + '\t' + to_string(forward.z);
+		string strRight = to_string(right.x) + '\t' + to_string(right.y) + '\t' + to_string(right.z);
+
+		string finalS = strRight + '\n' + strUp + '\n' + strForward + '\n' + '\n';
+
+		//OutputDebugString(L"check point\n");
+		OutputDebugStringA((to_string(debugCnt)+'\n').c_str());
+		OutputDebugStringA(finalS.c_str());
+	}
 
 	vector<Vec3> worldPos =
 	{

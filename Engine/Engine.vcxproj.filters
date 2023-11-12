@@ -159,7 +159,10 @@
     <ClInclude Include="Player.h">
       <Filter>Object\Test</Filter>
     </ClInclude>
-    <ClInclude Include="Creature.h">
+    <ClInclude Include="CreatureManager.h">
+      <Filter>Object\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Dummy.h">
       <Filter>Object\Test</Filter>
     </ClInclude>
   </ItemGroup>
@@ -290,7 +293,10 @@
     <ClCompile Include="Player.cpp">
       <Filter>Object\Test</Filter>
     </ClCompile>
-    <ClCompile Include="Creature.cpp">
+    <ClCompile Include="CreatureManager.cpp">
+      <Filter>Object\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Dummy.cpp">
       <Filter>Object\Test</Filter>
     </ClCompile>
   </ItemGroup>

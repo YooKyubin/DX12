@@ -10,6 +10,8 @@
 #include "Shader.h"
 #include "ParticleSystem.h"
 #include "InstancingManager.h"
+
+#include "Input.h"
 // static 변수 사용을 위한 구현부에서 선언
 Matrix Camera::S_MatView;
 Matrix Camera::S_MatProjection;
@@ -33,7 +35,15 @@ void Camera::FinalUpdate() // 실질적 행렬 계산 항목
 		_matProjection = ::XMMatrixPerspectiveFovLH(_fov, _width / _height, _near, _far);
 	else
 		_matProjection = ::XMMatrixOrthographicLH(_width * _scale, _height * _scale, _near, _far);
+	
+	//S_MatView = _matView;
+	//S_MatProjection = _matProjection;
 
+	if (INPUT->GetButtonDown(KEY_TYPE::Q))
+	{
+		//OutputDebugString(GetName().c_str());
+		OutputDebugString(L"hello world");
+	}
 	_frustum.FinalUpdate();
 }
 
@@ -60,7 +70,8 @@ void Camera::SortGameObject()
 				gameObject->GetTransform()->GetWorldPosition(),
 				gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
 			{
-				continue;
+				/*OutputDebugStringW(gameObject->GetName());*/
+				//continue; // frustum culling은 우선 나중에 해결하는 것으로
 			}
 		}
 
